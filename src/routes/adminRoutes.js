@@ -1,0 +1,23 @@
+const express = require("express");
+const router = express.Router();
+const auth = require("../middlewares/authMiddleware");
+const role = require("../middlewares/roleMiddleware");
+const { addBook, updateBook, deleteBook, listBooks, borrowLogs,registerAdmin } = require("../controllers/adminController");
+const { bookValidation ,registerValidation} = require("../utils/validators");
+const { validationResult } = require("express-validator");
+
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ success: false, errors: errors.array() });
+  next();
+};
+
+router.use(auth, role("admin"));
+router.post("/register-admin", registerValidation, validate, registerAdmin);
+router.post("/books", bookValidation, validate, addBook);
+router.put("/books/:id", bookValidation, validate, updateBook);
+router.delete("/books/:id", deleteBook);
+router.get("/books", listBooks);
+router.get("/borrow-events", borrowLogs);
+
+module.exports = router;
