@@ -23,6 +23,28 @@ Gives flexibility to write raw SQL when needed for complex operations
 
 **Trade-off**: While Prisma provides excellent DX, we use raw SQL for critical concurrency operations (borrow/update and delete transactions) to ensure precise control over locking mechanisms and transaction isolation levels.
 
+### Project Structure
+Pratilipi-Backend-Assignment/
+├── prisma/                   # Prisma schema & migrations
+│   ├── migrations/          # Migration files
+│   └── schema.prisma        # DB schema
+├── src/                     # Main application source
+│   ├── controllers/         # Route handlers (CRUD, borrow logic)
+│   ├── routes/              # Express route definitions
+│   ├── services/            # Business logic (borrow concurrency control)
+│   ├── middlewares/         # error handling, auth
+│   ├── utils/               # validators
+│   ├── app.js               # Express app setup
+│   └── server.js            # App entrypoint
+├── .gitignore               # Untracked files
+├── Dockerfile               # Docker config for app
+├── docker-compose.yml       # Docker compose (app + Postgres)
+├── package.json             # Dependencies & scripts
+├── package-lock.json        # Lockfile
+├── README.md                # Project documentation
+
+
+
 ## Database Design
 
 ### Indexing Strategy
@@ -45,7 +67,7 @@ We've implemented strategic indexes to optimize query performance:
 
 ### Feedback Incorporation 
 
-## Concurrency control 
+#### Concurrency control 
 To prevent race conditions when multiple users try to borrow the same book at the same time, concurrency is handled at the database level using row-level locking inside a transaction.
 Also For all write operations on a Book (borrow, update, soft delete), the book row is first locked before checking or modifying its state. This ensures that concurrent requests affecting the same book are serialized and prevents race conditions such as multiple users borrowing the same book or an admin updating/deleting a book while it is being borrowed.
 
