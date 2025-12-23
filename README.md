@@ -124,7 +124,7 @@ deleted_at: DateTime? // NULL = active, timestamp = deleted
 Full API documentation available at:
 - [**Postman Collection**](https://spaceflight-operator-63958023-382415.postman.co/workspace/Aeshna-Jain's-Workspace~b7907cc8-abb5-4489-82ca-daba0f39c503/collection/47076302-47132617-4997-4423-9622-72a2e7872ccb?action=share&creator=47076302)
 ```
-To test the Admin routes take the credentials as 
+To test the Admin routes take the following credentials for login as :
     "email":"admin@example.com",
     "password": "Admin123*"
   ```  
