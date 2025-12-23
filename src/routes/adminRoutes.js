@@ -15,7 +15,6 @@ const validate = (req, res, next) => {
 router.use(auth, role("admin"));
 router.post("/register-admin", registerValidation, validate, registerAdmin);
 router.post("/books", bookValidation, validate, addBook);
-router.put("/books/:id", bookValidation, validate, updateBook);
 router.patch("/books/:id",patchBookValidation,validate,updateSpecificBookDetails);
 
 // Soft delete book

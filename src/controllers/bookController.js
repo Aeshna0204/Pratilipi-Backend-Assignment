@@ -8,7 +8,11 @@ exports.listBooks = async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const status = req.query.status;
 
-    const where = status ? { status } : {};
+    // const where = status ? { status } : {};
+     const where = {
+      deletedAt: null,        // exclude soft-deleted books
+      ...(status && { status })
+    };
     const [data, total] = await Promise.all([
       prisma.book.findMany({ where, skip: (page - 1) * limit, take: limit, orderBy: { createdAt: "desc" } }),
       prisma.book.count({ where })
@@ -19,17 +23,34 @@ exports.listBooks = async (req, res, next) => {
 };
 
 
-exports.viewBook=async (req, res, next) => {
-    try {
-        const book_id=parseInt(req.params.id);
-        const book=await prisma.book.findUnique({where:{id:book_id}});
-        if(!book){
-            return res.status(404).json({success:false,message:"Book not found"});
-        }
-        res.json({success:true,data:book});
+exports.viewBook = async (req, res, next) => {
+  try {
+    const bookId = parseInt(req.params.id);
+    if (isNaN(bookId)) {
+      return res.status(400).json({ success: false, message: "Invalid book id" });
+    }
 
-    }catch(err){next(err);}
+    const book = await prisma.book.findUnique({
+      where: { id: bookId }
+    });
+
+    if (!book) {
+      return res.status(404).json({ success: false, message: "Book not found" });
+    }
+
+    if (book.deletedAt) {
+      return res.status(410).json({ // 410 Gone is semantically correct
+        success: false,
+        message: "Book has been deleted"
+      });
+    }
+
+    res.json({ success: true, data: book });
+  } catch (err) {
+    next(err);
+  }
 };
+
 
 exports.borrowBook = async (req, res, next) => {
   try {

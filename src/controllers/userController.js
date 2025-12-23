@@ -8,13 +8,18 @@ exports.userBorrowedBooks = async (req, res, next) => {
 
     const [data, total] = await Promise.all([
       prisma.borrowEvent.findMany({
-        where: { userId: req.user.userId },
+        where: { userId: req.user.userId, book: { status: "borrowed" } },
         include: { book: true },
         skip: (page - 1) * limit,
         take: limit,
         orderBy: { borrowedAt: "desc" }
       }),
-      prisma.borrowEvent.count({ where: { userId: req.user.userId } })
+      prisma.borrowEvent.count({
+        where: {
+          userId: req.user.userId,
+          book: { status: "borrowed" }
+        }
+      })
     ]);
 
     res.json({ success: true, data, total, page, limit });
