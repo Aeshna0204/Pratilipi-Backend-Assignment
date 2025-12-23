@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middlewares/authMiddleware");
 const role = require("../middlewares/roleMiddleware");
-const { addBook, updateBook, deleteBook, listBooks, borrowLogs,registerAdmin } = require("../controllers/adminController");
-const { bookValidation ,registerValidation} = require("../utils/validators");
+const { addBook, updateBook, deleteBook, listBooks, borrowLogs,registerAdmin,updateSpecificBookDetails } = require("../controllers/adminController");
+const { bookValidation ,registerValidation,patchBookValidation} = require("../utils/validators");
 const { validationResult } = require("express-validator");
 
 const validate = (req, res, next) => {
@@ -16,6 +16,8 @@ router.use(auth, role("admin"));
 router.post("/register-admin", registerValidation, validate, registerAdmin);
 router.post("/books", bookValidation, validate, addBook);
 router.put("/books/:id", bookValidation, validate, updateBook);
+router.patch("/books/:id",patchBookValidation,validate,updateSpecificBookDetails);
+
 router.delete("/books/:id", deleteBook);
 router.get("/books", listBooks);
 router.get("/borrow-events", borrowLogs);

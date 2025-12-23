@@ -20,3 +20,24 @@ exports.bookValidation = [
     .isIn(["available", "borrowed"])
     .withMessage("Status must be either 'available' or 'borrowed'")
 ];
+exports.patchBookValidation = [
+  body("title")
+    .optional()
+    .notEmpty()
+    .withMessage("Title cannot be empty"),
+
+  body("author")
+    .optional()
+    .notEmpty()
+    .withMessage("Author cannot be empty"),
+
+  body("genre")
+    .optional()
+    .notEmpty()
+    .withMessage("Genre cannot be empty"),
+
+  body("status")
+    .optional()
+    .isIn(["available", "borrowed"])
+    .withMessage("Status must be either 'available' or 'borrowed'")
+];

@@ -50,6 +50,64 @@ exports.updateBook = async (req, res, next) => {
   } catch (err) { err.status = 404; next(err); }
 };
 
+
+exports.updateSpecificBookDetails = async (req, res, next) => {
+  try {
+    const bookId = parseInt(req.params.id);
+    if (isNaN(bookId)) {
+      return res.status(400).json({ message: "Invalid book id" });
+    }
+
+    // Remove undefined fields
+    const updateData = {};
+    const allowedFields = ["title", "author", "genre", "status"];
+
+    allowedFields.forEach((field) => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field];
+      }
+    });
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No valid fields provided for update" });
+    }
+
+    // // Check book exists & not soft-deleted
+    // const book = await prisma.book.findFirst({
+    //   where: { id: bookId, deletedAt: null }
+    // });
+
+    // if (!book) {
+    //   return res.status(404).json({ message: "Book not found or deleted" });
+    // }
+
+    // Optional business rule: prevent marking borrowed book as available directly
+    // if (
+    //   book.status === "borrowed" &&
+    //   updateData.status === "available"
+    // ) {
+    //   return res.status(400).json({
+    //     message: "Cannot mark a borrowed book as available directly"
+    //   });
+    // }
+
+    const updatedBook = await prisma.book.update({
+      where: { id: bookId },
+      data: updateData
+    });
+
+    res.json({
+      success: true,
+      data: updatedBook,
+      message: "Book updated successfully"
+    });
+
+  } catch (err) {
+    next(err);
+  }
+};
+
+
 exports.deleteBook = async (req, res, next) => {
   try {
     await prisma.book.delete({ where: { id: parseInt(req.params.id) } });
