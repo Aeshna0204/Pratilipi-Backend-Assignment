@@ -11,7 +11,9 @@ exports.borrowBook = async (bookId, userId) => {
   return await prisma.$transaction(async (tx) => {
     // Lock the book row for this transaction
     const book = await tx.$queryRawUnsafe(
-      `SELECT * FROM "Book" WHERE id = $1 FOR UPDATE`,
+      `SELECT * FROM "Book" 
+       WHERE id = $1 AND "deletedAt" IS NULL
+       FOR UPDATE`,
       bookId
     );
 

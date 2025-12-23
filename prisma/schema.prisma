@@ -32,7 +32,14 @@ model Book {
   status    BookStatus @default(available)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+  deletedAt DateTime?  // <-- Soft delete column added
   borrowEvents BorrowEvent[]
+
+  // Indexes to improve query performance
+  @@index([status])
+  @@index([createdAt])
+  @@index([deletedAt])
+
 }
 
 model BorrowEvent {
@@ -42,6 +49,11 @@ model BorrowEvent {
   book       Book     @relation(fields: [bookId], references: [id])
   bookId     Int
   borrowedAt DateTime @default(now())
+
+  // Indexes to speed up joins / filtering
+  @@index([userId])
+  @@index([bookId])
+
 }
 
 enum Role {
